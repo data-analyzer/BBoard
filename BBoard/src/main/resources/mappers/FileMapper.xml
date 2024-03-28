@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.se.board.domain.file.FileMapper">
+
+	<!-- TB_FILE 전체 컬럼 -->
+	<sql id="fileColumns">
+		  ID
+		, POST_ID
+		, ORIGINAL_NAME
+		, SAVE_NAME
+		, SIZE
+		, DELETE_YN
+		, CREATED_DATE
+		, DELETED_DATE
+	</sql>
+
+	<!-- 파일 정보 저장, 아래 bug로 일단 하나씩 저장헤서 key 값 받아오자 -->
+	<insert id="save" parameterType="com.se.board.domain.file.FileRequest" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO TB_FILE (
+			  POST_ID
+			, ORIGINAL_NAME
+			, SAVE_NAME
+			, SIZE
+			, DELETE_YN
+			, CREATED_DATE
+			, DELETED_DATE
+		) VALUES
+		(
+			  #{postId}
+			, #{originalName}
+			, #{saveName}
+			, #{size}
+			, 0
+			, NOW()
+			, NULL
+		)
+	</insert>
+
+	<!-- 파일 정보 저장, bug list의 첫번째 키만 받아옴 why ? -->
+	<insert id="saveAll" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO TB_FILE (
+			<include refid="fileColumns" />
+		) VALUES
+		<foreach item="file" collection="list" separator=",">
+		(
+			#{file.id}
+			, #{file.postId}
+			, #{file.originalName}
+			, #{file.saveName}
+			, #{file.size}
+			, 0
+			, NOW()
+			, NULL
+		)
+		</foreach>
+	</insert>
+
+	<!-- 파일 리스트 조회 -->
+	<select id="findAllByPostId" parameterType="long" resultType="com.se.board.domain.file.FileResponse">
+		SELECT
+			<include refid ="fileColumns" />
+		FROM TB_FILE
+		WHERE
+			DELETE_YN = 0
+			AND POST_ID = #{postId}
+		ORDER BY ID
+	</select>
+
+	<!-- 파일 리스트 조회 -->
+	<select id="findAllByIds" parameterType="list" resultType="com.se.board.domain.file.FileResponse">
+		SELECT
+			<include refid ="fileColumns" />
+		FROM TB_FILE
+		WHERE
+			DELETE_YN = 0
+			AND ID IN
+			<foreach item="id" collection="list" open="(" separator="," close=")" >
+				#{id}
+			</foreach>
+		ORDER BY
+			ID
+	</select>
+
+	<!-- 파일 삭제 -->
+	<delete id="deleteAllByIds" parameterType="list">
+		UPDATE TB_FILE
+		SET
+			  DELETE_YN = 1
+			, DELETED_DATE = NOW()
+		WHERE
+			ID IN
+			<foreach item="id" collection="list" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</delete>
+
+	<select id="findById" parameterType="long" resultType="com.se.board.domain.file.FileResponse">
+		SELECT
+			<include refid="fileColumns" />
+		FROM
+			TB_FILE
+		WHERE
+			DELETE_YN = 0
+			AND ID = ${id}
+	</select>
+
+	<!-- 파일 삭제, 게시글 삭제 시 -->
+	<delete id="deleteAllByPostId" parameterType="long">
+		UPDATE TB_FILE
+		SET
+			  DELETE_YN = 1
+			, DELETED_DATE = NOW()
+		WHERE
+			POST_ID = #{postId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www/thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/basic">
+	<th:block layout:fragment="title">
+		<title>검색 페이지</title>
+	</th:block>
+
+	<th:block layout:fragment="content">
+		<div class="page_tits">
+			<h3>검색</h3>
+			<p class="path"><strong>현재 위치 :</strong> <span>검색</span> <span>Search 검색</span></p>
+		</div>
+
+		<div class="content">
+			<section>
+				<!-- /* 검색 */-->
+				<div class="search_box">
+					<form id="searchForm" onsubmit="return false;" autocomplete="off">
+						<div class="sch_group fl">
+							<select id="searchType" name="searchType" title="검색유형 선택">
+								<option value="">전체 검색</option>
+								<option value="title">제목</option>
+								<option value="content">내용</option>
+								<option value="writer">작성자</option>
+							</select>
+							<input type="text" id="keyword" name="keyword" placeholder="키워드를 입력해 주세요." title="키워드 입력" />
+							<button type="button" class="bt_search" onclick="searchPage(1);"><i class="fas fa-search"></i><span class="skip_info">검색</span></button>
+						</div>
+					</form>
+				</div>
+
+				<!--/*리스트 */-->
+				<table class="tb tb_col">
+					<colgroup>
+						<col style="width:50px;"/>
+						<col style="width:8%;" />
+						<col style="width:auto;" />
+						<col style="width:10%;" />
+						<col style="width:10%;" />
+						<col style="width:7%;" />
+						<col style="width:20%;" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">번호</th>
+							<th scope="col">isbn13</th>
+							<th scope="col">제목</th>
+							<th scope="col">저자</th>
+							<th scope="col">출판사</th>
+							<th scope="col">출판일</th>
+							<th scope="col">설명</th>
+						</tr>
+					</thead>
+
+					<!--/* 리스트 데이터 렌더링 영역 */-->
+					<tbody id="list">
+
+					</tbody>
+				</table>
+
+				<!--/* 페이지네이션 렌더링 영역 */-->
+				<div class="paging">
+
+				</div>
+
+				<!--/* 버튼 */-->
+				<p class="btn_set tr">
+					<a th:href="@{/post/write.do}" class="btns bnt_st3 btn_mid">글쓰기</a>
+				</p>
+			</section>
+		</div> <!--/* .content */-->
+	</th:block>
+	<th:block layout:fragment="script">
+		<script th:inline="javascript">
+		/*<![CDATA[*/
+
+			// 폐이지가 로드되었을 때, 딱 한 번만 함수를 실행
+			window.onload = () => {
+				setQueryStringParams();
+
+				// findAllPost();
+			}
+
+			// 쿼리 스트링 파라미터 셋팅
+			function setQueryStringParams() {
+
+				if (!location.search) {
+					return false;
+				}
+
+				const form = document.getElementById('searchForm');
+
+				new URLSearchParams(location.search).forEach((value, key) => {
+					if (form[key]) {
+						form[key].value = value;
+					}
+				})
+			}
+
+
+			// 검색 Api 호출 테스트
+
+			function searchPage(page) {
+
+				// 1. 검색 폼
+				const form = document.getElementById('searchForm');
+
+				if(! form.keyword.value) {
+					return false;
+				}
+
+
+				alert("keyword : " + form.keyword.value) ;
+				// 1. drawPage() 의 각 버튼에 선언된 onclick 이벤트를 통해 전달되는 page(페이지 번호)를 기준으로 객체 생성
+				// searchType과 keyword 추가
+				const queryParams = {
+					query: form.keyword.value,
+					page: (page) ? page : 1,
+					recordSize: 10,
+					pageSize: 10,
+					searchType: form.searchType.value,
+					keyword: form.keyword.value
+				}
+
+				/*
+				 * 2. location.pathname : 리스트 페이지의 URI("/post/list.do")를 의미
+				 *    new URLSearchParams(queryParams).toString() : queryParams의 모든 프로퍼티(key-value)를 스트링으로 변경
+				 *    URI + 쿼리 스트링에 해당하는 주소로 이동
+				 *    (해당 함수가 리턴해주는 값을 브라우저 콘솔(console)에 찍어보면 쉽게 이해)
+				 */
+				// location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
+
+				const response = getJson('/api/book/search', queryParams);
+				console.log(response);
+
+				alert(" totalHits, searchHitStage : " + response.totalHits + ", " + response.searchHitStage);
+				alert(" response.books.length : " + response.books.length);
+
+				let html = '';
+				if (response.books.length === 0) {
+					document.getElementById("list").innerHTML = '<td colspan="7"><div className="no_data_msg">검색된 결과가 없습니다.</div></td>';
+					return false;
+				}
+
+				response.books.forEach(row => {
+					html += `
+							<tr>
+								<td> 1 </td>
+								<td>${row.isbn13}</td>
+								<td class="tl"><a href="javascript:void(0);" onclick="goViewPage(${row.isbn13});">${shortenWords(row.title, 55)}</a></td>
+								<td>${shortenWords(row.author, 10)}</td>
+								<td>${row.publisher}</td>
+								<td>${row.pubDate}</td>
+								<td>${shortenWords(row.description, 25)}</td>
+							</tr>
+						`;
+				});
+
+				alert(html);
+
+				// 3. id 가 "list"인 요소를 찾아 HTML을 렌더링
+				document.getElementById("list").innerHTML = html;
+
+
+                // 3. 리스트 영역 추가
+
+                //console.log(list);
+
+				// 2. 리스트가 비어있는 경우,  행에 "검색 결과가 없다" 는 메시지를 출력하고, 페이지 번호(페이지네이션) HTML을 제거(초기화)한 후 로직을 종료
+				//if ( !list.length) {
+				//	document.getElementById('list').innerHTML = '<td colspan="7"><div className="no_data_msg">검색된 결과가 없습니다.</div></td>';
+				//	// drawPage();
+				//} else {
+				//	drawSearchList(list);
+				//}
+			}
+
+
+			// 리스트 HTML draw
+			function drawSearchList(list) {
+
+				// 1. 렌더링 할 HTML을 저장할 변수
+				let html = '';
+
+				/*
+				 * 2. 기존에 타입리프(Thymeleaf) 를 이요해서 리스트 데이터를 그리던 것과 유사한 로직
+				 *    기존에는 게시글 번호를 (전체 데이터 수 - loop의 인덱스 번호)로 처리했으나, 현재는 (전체 데이터 수 - ((현재 페이지 번호 -1) * 페이지당 출력할 데이터 개수))로 정밀히 계산
+				 *    -> 리스트 페이지에서 상세 페이지로 이동할 때 쿼리 스트링 파라미터를 전달하도록 직접 <a href="/post/view.do?id=${row.id}"> 걸었던 링크를 goViewPage(${row.id}); 함수 호출로 변경
+				 */
+				list.forEach(row => {
+					html += `
+						<tr>
+							<td> 1 </td>
+							<td>${row.isbn13}</td>
+							<td class="tl"><a href="javascript:void(0);" onclick="goViewPage(${row.isbn13});">${row.title}</a></td>
+							<td>${row.author}</td>
+							<td>${row.publisher}</td>
+							<td>${row.pubDate}</td>
+							<td>${shortenWords(row.description, 10)}</td>
+						</tr>
+					`;
+				})
+
+				// 3. id 가 "list"인 요소를 찾아 HTML을 렌더링
+				document.getElementById("list").innerHTML = html;
+			}
+
+		/*]]>*/
+		</script>
+	</th:block>
+</html>
