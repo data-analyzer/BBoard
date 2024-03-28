@@ -148,8 +148,8 @@ final class PostEsHelper {
 		searchSourceBuilder.query(boolQueryBuilder);
 		searchSourceBuilder.from(0);
 		searchSourceBuilder.size(AUTO_COMPLETE_LIMIT);
-//		String[] includes = {"title"};
-		String[] includes = {"createdDate", "postId", "fileId", "title", "content", "writer", "noticeYn", "deleteYn", "savedFilename", "modifiedDate", "deletedDate"};
+		String[] includes = {"title"};
+//		String[] includes = {"createdDate", "postId", "fileId", "title", "content", "writer", "noticeYn", "deleteYn", "savedFilename", "modifiedDate", "deletedDate"};
 		searchSourceBuilder.fetchSource(includes, null);
 
 		SearchRequest searchRequest = new SearchRequest(POST_INDEX);
@@ -158,7 +158,8 @@ final class PostEsHelper {
 		return searchRequest;
 	}
 
-	SearchRequest createChosungSearchRequest(String query, int page, String[] includes) {
+//	SearchRequest createChosungSearchRequest(String query, int page, String[] includes) {
+	SearchRequest createFcSearchRequest(String query, int page, String[] includes) {
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 		boolQueryBuilder.should()
 //				.add(QueryBuilders.matchQuery("title_chosung", query.replaceAll("\\s+", "")).boost(10.0f));
@@ -177,7 +178,7 @@ final class PostEsHelper {
 		return searchRequest;
 	}
 
-	SearchRequest createHanToEngSearchRequest(String query, int page, String[] includes) {
+	SearchRequest createKoToEnSearchRequest(String query, int page, String[] includes) {
 
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 		boolQueryBuilder.should()
@@ -197,7 +198,7 @@ final class PostEsHelper {
 		return searchRequest;
 	}
 
-	SearchRequest createEngToHanSearchRequest(String query, int page, String[] includes) {
+	SearchRequest createEnToKoSearchRequest(String query, int page, String[] includes) {
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 		boolQueryBuilder.should()
 //				.add(QueryBuilders.matchQuery("title_engtohan", query.replaceAll("\\s+", "")).boost(10.0f));
@@ -279,6 +280,19 @@ final class PostEsHelper {
 				.collect(Collectors.toList()));
 
 		return responseDto;
+	}
+
+
+	// add
+	PostSuggestResponse createTitleSuggestResponse(SearchResponse response) {
+
+		PostSuggestResponse suggestResponse = new PostSuggestResponse();
+		suggestResponse.setResult("OK");
+		suggestResponse.setTexts(Arrays.stream(response.getHits().getHits())
+				.map(hit -> hit.getSourceAsMap().get((String) "title").toString())
+				.collect(Collectors.toList()));
+
+		return suggestResponse;
 	}
 
 

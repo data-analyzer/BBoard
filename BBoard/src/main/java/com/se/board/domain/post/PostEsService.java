@@ -385,20 +385,20 @@ public class PostEsService {
 		// 인덱스 수정 필요, attachment.content 에서도 중복 copy하고 있는데, 빼고 content 에서 copy되고 있는지 확인 필요함
 
 		if (HangulUtil.isChosungQuery(query)) {
-			postResponse = searchByChosung(query, page);
+			postResponse = searchByFc(query, page); // searchByChosung(query, page);
 			if (postResponse.getTotalHits() > 0) {
 				return postResponse;
 			}
 		}
 
 		if (HangulUtil.isEnglishQuery(query)) {
-			postResponse = searchHanToEng(query, page);
+			postResponse = searchKoToEn(query, page);
 			if (postResponse.getTotalHits() > 0) {
 				return postResponse;
 			}
 		}
 
-		postResponse = searchEngToHan(query, page);
+		postResponse = searchEnToKo(query, page);
 		if (postResponse.getTotalHits() > 0) {
 			return postResponse;
 		}
@@ -502,7 +502,7 @@ public class PostEsService {
 //				BookSearchResponseDto responseDto = postEsHelper.createBookSearchResponseDto(response,
 //						SearchHitStage.TITLE_AUTHOR.toString());
 				PagingResponse<PostResponse> postResponse = postEsHelper.createPostSearchResponse(response,
-						EsSearchHitStage.TITLE_WRITER_CONTENT.toString());
+						EsSearchHitStage.TITLE_CONTENT.toString());
 
 				log.debug(postResponse.toString());
 				log.info("==================== kibo searchTitleAuthor =========== SlackWebHookUrl :" + SlackLogBot.getSlackWebHookUrl());
@@ -521,22 +521,22 @@ public class PostEsService {
 	}
 
 //	private BookSearchResponseDto searchByChosung(String query, int page) {
-	private PagingResponse<PostResponse> searchByChosung(String query, int page) {
+	private PagingResponse<PostResponse> searchByFc(String query, int page) {
 		query = HangulUtil.decomposeLayeredJaum(query);
 		try {
 //			String[] includes = {"isbn13", "title", "author", "publisher", "pubDate", "imageUrl", "description"};
 			String[] includes = {"createdDate", "postId", "fileId", "title", "content", "writer", "noticeYn", "deleteYn", "savedFilename", "modifiedDate", "deletedDate"};
 
-			SearchRequest searchRequest = postEsHelper.createChosungSearchRequest(query, page, includes);
+			SearchRequest searchRequest = postEsHelper.createFcSearchRequest(query, page, includes);
 			SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
 			if (response != null && response.getHits().getTotalHits().value > 0) {
 //				BookSearchResponseDto responseDto =
 //						postEsHelper.createBookSearchResponseDto(response, SearchHitStage.CHOSUNG.toString());
 				PagingResponse<PostResponse> postResponse =
-						postEsHelper.createPostSearchResponse(response,	EsSearchHitStage.CHOSUNG.toString());
+						postEsHelper.createPostSearchResponse(response,	EsSearchHitStage.FC.toString());
 
 				log.debug(postResponse.toString());
-				log.info("==================== kibo searchByChosung =========== SlackWebHookUrl :" + SlackLogBot.getSlackWebHookUrl());
+				log.info("==================== kibo searchByFC =========== SlackWebHookUrl :" + SlackLogBot.getSlackWebHookUrl());
 				SlackLogBot.sendMessage(postResponse.toString());
 
 				return postResponse;
@@ -552,21 +552,21 @@ public class PostEsService {
 	}
 
 //	private BookSearchResponseDto searchEngToHan(String query, int page) {
-	private PagingResponse<PostResponse> searchEngToHan(String query, int page) {
+	private PagingResponse<PostResponse> searchEnToKo(String query, int page) {
 		try {
 //			String[] includes = {"isbn13", "title", "author", "publisher", "pubDate", "imageUrl", "description"};
 			String[] includes = {"createdDate", "postId", "fileId", "title", "content", "writer", "noticeYn", "deleteYn", "savedFilename", "modifiedDate", "deletedDate"};
 
-			SearchRequest searchRequest = postEsHelper.createEngToHanSearchRequest(query, page, includes);
+			SearchRequest searchRequest = postEsHelper.createEnToKoSearchRequest(query, page, includes);
 			SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
 			if (response != null && response.getHits().getTotalHits().value > 0) {
 //				BookSearchResponseDto responseDto =
 //						postEsHelper.createBookSearchResponseDto(response, SearchHitStage.ENG_TO_HAN.toString());
 				PagingResponse<PostResponse> postResponse =
-						postEsHelper.createPostSearchResponse(response,	EsSearchHitStage.ENG_TO_HAN.toString());
+						postEsHelper.createPostSearchResponse(response,	EsSearchHitStage.EN_TO_KO.toString());
 
 				log.debug(postResponse.toString());
-				log.info("==================== kibo searchEngToHan =========== SlackWebHookUrl :" + SlackLogBot.getSlackWebHookUrl());
+				log.info("==================== kibo searchEnToKo =========== SlackWebHookUrl :" + SlackLogBot.getSlackWebHookUrl());
 				SlackLogBot.sendMessage(postResponse.toString());
 
 				return postResponse;
@@ -582,21 +582,21 @@ public class PostEsService {
 	}
 
 //	private BookSearchResponseDto searchHanToEng(String query, int page) {
-	private PagingResponse<PostResponse> searchHanToEng(String query, int page) {
+	private PagingResponse<PostResponse> searchKoToEn(String query, int page) {
 		try {
 //			String[] includes = {"isbn13", "title", "author", "publisher", "pubDate", "imageUrl", "description"};
 			String[] includes = {"createdDate", "postId", "fileId", "title", "content", "writer", "noticeYn", "deleteYn", "savedFilename", "modifiedDate", "deletedDate"};
 
-			SearchRequest searchRequest = postEsHelper.createHanToEngSearchRequest(query, page, includes);
+			SearchRequest searchRequest = postEsHelper.createKoToEnSearchRequest(query, page, includes);
 			SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
 			if (response != null && response.getHits().getTotalHits().value > 0) {
 //				BookSearchResponseDto responseDto =
 //						postEsHelper.createBookSearchResponseDto(response, SearchHitStage.HAN_TO_ENG.toString());
 				PagingResponse<PostResponse> postResponse =
-						postEsHelper.createPostSearchResponse(response,	EsSearchHitStage.HAN_TO_ENG.toString());
+						postEsHelper.createPostSearchResponse(response,	EsSearchHitStage.KO_TO_EN.toString());
 
 				log.debug(postResponse.toString());
-				log.info("==================== kibo searchHanToEng =========== SlackWebHookUrl :" + SlackLogBot.getSlackWebHookUrl());
+				log.info("==================== kibo searchKoToEn =========== SlackWebHookUrl :" + SlackLogBot.getSlackWebHookUrl());
 				SlackLogBot.sendMessage(postResponse.toString());
 
 				return postResponse;
