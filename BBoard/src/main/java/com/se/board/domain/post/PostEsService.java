@@ -27,7 +27,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.se.board.common.book.HangulUtil;
+import com.se.board.common.book.EsKoUtil;
 import com.se.board.common.dto.SearchDto;
 import com.se.board.common.gson.LocalDateTimeTypeAdapter;
 import com.se.board.common.paging.PagingResponse;
@@ -352,7 +352,7 @@ public class PostEsService {
 
 		PagingResponse<PostResponse> postResponse;
 
-		if (HangulUtil.isCompleteHangulQuery(query)) {
+		if (EsKoUtil.isCompleteKoQuery(query)) {
 			// 추가 (title, content)
 			postResponse = searchTitleContent(query, page);
 			if (postResponse.getTotalHits() > 0) {
@@ -384,14 +384,14 @@ public class PostEsService {
 		// ["content_text", "content_ac", "content_chosung", "content_engtohan", "content_hantoeng"]
 		// 인덱스 수정 필요, attachment.content 에서도 중복 copy하고 있는데, 빼고 content 에서 copy되고 있는지 확인 필요함
 
-		if (HangulUtil.isChosungQuery(query)) {
+		if (EsKoUtil.isFcQuery(query)) {
 			postResponse = searchByFc(query, page); // searchByChosung(query, page);
 			if (postResponse.getTotalHits() > 0) {
 				return postResponse;
 			}
 		}
 
-		if (HangulUtil.isEnglishQuery(query)) {
+		if (EsKoUtil.isEnQuery(query)) {
 			postResponse = searchKoToEn(query, page);
 			if (postResponse.getTotalHits() > 0) {
 				return postResponse;
@@ -522,7 +522,7 @@ public class PostEsService {
 
 //	private BookSearchResponseDto searchByChosung(String query, int page) {
 	private PagingResponse<PostResponse> searchByFc(String query, int page) {
-		query = HangulUtil.decomposeLayeredJaum(query);
+		query = EsKoUtil.decomposeDualConsonant(query);
 		try {
 //			String[] includes = {"isbn13", "title", "author", "publisher", "pubDate", "imageUrl", "description"};
 			String[] includes = {"createdDate", "postId", "fileId", "title", "content", "writer", "noticeYn", "deleteYn", "savedFilename", "modifiedDate", "deletedDate"};

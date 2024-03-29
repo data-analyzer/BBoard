@@ -32,7 +32,8 @@ final class PostEsHelper {
 
 //	private static final String POST_INDEX = "ingest-test-v1";
 //	protected static String POST_INDEX = "post-v1";
-	protected static String POST_INDEX = "post-v2";
+//	protected static String POST_INDEX = "post-v2";
+	protected static String POST_INDEX = "post-v3";
 	protected static int COUNT_PER_PAGE = 10;
 	private static final int AUTO_COMPLETE_LIMIT = 10;
 
