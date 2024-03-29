@@ -186,6 +186,12 @@ public class ElasticSearchConfig {
 //		keep-alive를 사용해 connection을 재상요 할 수 있도록 함
 //		관련 이슈 (https://github.com/elastic/elasticsearch/issues/65213)
 //		위 이슈에서 제안하는 방법은 OS TCP 레이어 설정을 직접 바꿔야 하기 때문에, 아래 방법으로 keep-alive 설정 하는것을 추천
+//		오류가 발생하지 않아서 괜찮다고 생각했으나 며칠 뒤 오랜만에 많은 파일들을 올렸을 때 동일 오류 발생하네... es에도 데이터는 모두 올라 가는듯함
+//		There was an unexpected error (type=Internal Server Error, status=500).
+//		java.net.SocketTimeoutException: 30,000 milliseconds timeout on connection http-outgoing-29 [ACTIVE]
+//		ElasticsearchException[java.net.SocketTimeoutException: 30,000 milliseconds timeout on connection http-outgoing-29 [ACTIVE]]; nested: SocketTimeoutException[30,000 milliseconds timeout on connection http-outgoing-29 [ACTIVE]]; nested: SocketTimeoutException[30,000 milliseconds timeout on connection http-outgoing-29 [ACTIVE]];
+//			at com.se.board.domain.post.PostEsService.bulkDocument(PostEsService.java:123)
+//		Caused by: java.net.SocketTimeoutException: 30,000 milliseconds timeout on connection http-outgoing-29 [ACTIVE]
 
 		RestHighLevelClient esClient = new RestHighLevelClient(builder);
 		try {
