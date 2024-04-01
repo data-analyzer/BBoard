@@ -31,7 +31,7 @@
 							</li>
 							<li>
 								<label for="password" class="skip_info">비밀번호</label>
-								<input type="password" id="password" name="password" title="비밀번호" placeholder="비밀번호" />
+								<input type="password" id="password" name="password" title="비밀번호" placeholder="비밀번호" onkeyup="onKeyup(this);"/>
 							</li>
 						</ul>
 						<button type="button" onclick="login();" class="login_btn">로그인</button>
@@ -211,6 +211,31 @@
 				}
 			});
 		}
+
+		// OK
+//		function onKeyupTest(i) {
+//			if (window.event.keyCode == 13) {
+//			    // 엔터키가 눌렸을 때 실행할 내용
+//			    login();
+//			}
+//		}
+
+		// OK
+		function onKeyup(i) {
+			$('#loginForm').keypress(function (e) {
+				if(e.keyCode === 13) {
+					login();
+				}
+			});
+		}
+		// NOT
+//		function onKeyup(i) {
+//			i.keypress(function (e) {
+//				if(e.keyCode === 13) {
+//					login();
+//				}
+//			});
+//		}
 
 	</script>
 </body>

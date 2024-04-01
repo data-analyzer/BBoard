@@ -22,7 +22,7 @@
 								<option value="content">내용</option>
 								<option value="writer">작성자</option>
 							</select>
-							<input type="text" id="keyword" name="keyword" placeholder="키워드를 입력해 주세요." title="키워드 입력" />
+							<input type="text" id="keyword" name="keyword" placeholder="키워드를 입력해 주세요." title="키워드 입력" onkeyup="onKeyup(this);"/>
 							<button type="button" class="bt_search" onclick="movePage(1);"><i class="fas fa-search"></i><span class="skip_info">검색</span></button>
 						</div>
 					</form>
@@ -268,6 +268,16 @@
 				 *    (해당 함수가 리턴해주는 값을 브라우저 콘솔(console)에 찍어보면 쉽게 이해)
 				 */
 				location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
+			}
+
+
+
+			function onKeyup(i) {
+				$('#searchForm').keypress(function (e) {
+					if(e.keyCode === 13) {
+						movePage(1);
+					}
+				});
 			}
 
 		/*]]>*/
