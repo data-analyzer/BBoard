@@ -107,6 +107,11 @@ public class PostController {
 	public String openPostList(@ModelAttribute("params") final SearchDto params, Model model) {
 		PagingResponse<PostResponse> response = postService.findAllPost(params);
 		model.addAttribute("response", response);
+		// 분리해 보자
+		if (params.getKeyword() != null && !"".equals(params.getKeyword())) {
+			return "post/search_list";
+		}
+
 		return "post/list";
 	}
 
@@ -115,7 +120,7 @@ public class PostController {
 	public String openPostSearchList(@ModelAttribute("params") final SearchDto params, Model model) {
 		PagingResponse<PostResponse> response = postService.findAllPost(params);
 		model.addAttribute("response", response);
-		return "post/list";
+		return "post/search_list";
 	}
 
 	// 게시글 상세 페이지

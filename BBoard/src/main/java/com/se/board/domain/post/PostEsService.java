@@ -46,8 +46,6 @@ public class PostEsService {
 	private final RestHighLevelClient esClient;
 	private final PostEsHelper postEsHelper;
 
-//	private final String POST_INDEX = "post-v1";
-
 	//create
 	public void createDocument( final String index, final String id, final Map<String, Object> params, String _pipeline) throws ElasticsearchException {
 		try {
@@ -107,7 +105,26 @@ public class PostEsService {
 //			ElasticsearchException[com.fasterxml.jackson.core.exc.StreamConstraintsException: String length (20054016) exceeds the maximum length (20000000)]; nested: StreamConstraintsException[String length (20054016) exceeds the maximum length (20000000)];
 //				at com.se.board.domain.post.PostEsService.bulkDocument(PostEsService.java:107)
 //			==> ?
+//			https://github.com/FasterXML/jackson-core/issues/863
+//			motlin commented on Apr 28, 2023
+//			Thank you @pjfanning.
 //
+//			That comment shows that we're able to set the max length higher with code like:
+//
+//			objectMapper.getFactory()
+//					.setStreamReadConstraints(StreamReadConstraints.builder().maxStringLength(10_000_000).build())
+//			I'm able to effectively disable the feature by setting the max length to Integer.MAX_VALUE, but not 0.
+//
+//			ObjectMapper objectMapper = ...;
+//			StreamReadConstraints streamReadConstraints = StreamReadConstraints
+//			    .builder()
+//			    .maxStringLength(Integer.MAX_VALUE)
+//			    .build();
+//			objectMapper.getFactory().setStreamReadConstraints(streamReadConstraints);
+//			I'm going to set the max length high to unblock the upgrade. It's not clear to me if this is a good idea or if this indicates a real performance problem in my code. Are there other options I ought to consider?
+
+//			이렇게 해봐도 안되네... String length (20054016) exceeds the maximum length (20000000)
+
 
 //			There was an unexpected error (type=Internal Server Error, status=500).
 //			java.net.SocketTimeoutException: 30,000 milliseconds timeout on connection http-outgoing-1 [ACTIVE]
@@ -115,6 +132,18 @@ public class PostEsService {
 //				at com.se.board.domain.post.PostEsService.bulkDocument(PostEsService.java:114)
 //			Caused by: java.net.SocketTimeoutException: 30,000 milliseconds timeout on connection http-outgoing-1 [ACTIVE]
 //			==> keepAlive use true, keepAlive timeout sec
+//			==> 적용 후 괜찮았으나 며칠 뒤 다시 업로드해보니 동일 오류 발생함
+//			==>
+//			https://discuss.elastic.co/t/how-to-avoid-30-000ms-timeout-during-reindexing/231370
+//			After debugging enough, Came to know that socketTimeout should be set during client creation time and request timeout is something completely different from socketTimeout.
+//
+//			I started setting socketTimeout as below and worked fine.
+//
+//			return new RestHighLevelClient( RestClient.builder( HttpHost
+//			                                                            .create( elasticSearchConfig().getEndPoint() ) )
+//			                                        .setHttpClientConfigCallback( hacb -> hacb.addInterceptorLast( interceptor ) )
+//			                                        .setRequestConfigCallback(requestConfigBuilder -> requestConfigBuilder.setConnectTimeout(elasticSearchConfig().getClientConnectionTimeout())
+//			                                                .setSocketTimeout(elasticSearchConfig().getClientSocketTimeout())));
 
 
 		} catch (IOException e) {

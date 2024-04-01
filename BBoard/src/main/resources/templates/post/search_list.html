@@ -6,7 +6,7 @@
 
 	<th:block layout:fragment="content">
 		<div class="page_tits">
-			<h3>게시판 관리</h3>
+			<h3>검색 결과</h3>
 			<p class="path"><strong>현재 위치 :</strong> <span>게시판 관리</span> <span>리스트형</span> <span>리스트</span></p>
 		</div>
 
@@ -29,17 +29,19 @@
 				</div>
 
 				<!--/*리스트 */-->
-				<table class="tb tb_col">
+				<table class="tb_noneborder tb_noneborder_col">
 					<colgroup>
 						<!-- col style="width:50px;"/><col style="width:7.5%;" /><col style="width:auto;" /><col style="width:10%;"/><col style="width:15%;" /><col style="width:7.5%;" / -->
-						<col style="width:50px;"/><col style="width:7.5%;" /><col style="width:auto;" /><col style="width:30%;" /><col style="width:10%;"/><col style="width:10%;" />
+						<!-- col style="width:50px;"/><col style="width:7.5%;" /><col style="width:auto;" /><col style="width:30%;" /><col style="width:10%;"/><col style="width:10%;" / -->
+
+						<col style="width:5%;" /><col style="width:20%;" /><col style="width:auto;" /><col style="width:7.5%;"/><col style="width:10%;" />
 					</colgroup>
 					<thead>
 						<tr>
-							<th scope="col"><input type="checkbox"/></th>
 							<th scope="col">번호</th>
-							<th scope="col">제목</th>
-							<th scope="col">내용</th>
+							<th scope="col">제목 또는 첨부파일명</th>
+							<th scope="col">검색 결과</th>
+							<!-- th scope="col">Highlight</th -->
 							<th scope="col">작성자</th>
 							<th scope="col">등록일</th>
 							<!-- th scope="col">조회수</th -->
@@ -104,7 +106,7 @@
 
 				// 2. 리스트가 비어있는 경우,  행에 "검색 결과가 없다" 는 메시지를 출력하고, 페이지 번호(페이지네이션) HTML을 제거(초기화)한 후 로직을 종료
 				if ( !list.length) {
-					document.getElementById('list').innerHTML = '<td colspan="6"><div className="no_data_msg">검색된 결과가 없습니다.</div></td>';
+					document.getElementById('list').innerHTML = '<td colspan="5"><div className="no_data_msg">검색된 결과가 없습니다.</div></td>';
 					drawPage();
 				}
 
@@ -129,9 +131,12 @@
 			function drawList(list, num) {
 
 				const form = document.getElementById('searchForm');
-				if(form.keyword.value) {
-					document.getElementsByTagName("table")[0].getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[2].innerHTML = "제목 또는 첨부파일명";
-				}
+				//if(form.keyword.value) {
+				//	document.getElementsByTagName("table")[0].getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[2].innerHTML = "제목 또는 첨부파일명";
+				//}
+
+				// highlightsMap
+				const highlightsMap = [[ ${response.list} ]];
 
 				// 1. 렌더링 할 HTML을 저장할 변수
 				let html = '';
@@ -143,14 +148,27 @@
 				 */
 
 				 // 일단 <td>{row.viewCnt}</td> 삭제
+				 // // <td><span th:if="${row.highlightsMap['title_text']}" th:text="${row.highlightsMap['title_text']}" /></span> <br/>${row.highlightsMap['content_text']}</td>
 				list.forEach(row => {
 					html += `
 						<tr>
-							<td><input type="checkbox" /></td>
 							<td>${row.noticeYn === false ? num-- : '공지'}</td>
 							<td class="tl"><a href="javascript:void(0);" onclick="goViewPage(${row.id}, ${row.fileId});">${row.title}</a></td>
-							<td>${shortenWords(row.content, 50)}</td>
-							<td>${row.writer}</td>
+
+
+
+
+							<td>${(row.highlightsMap['title_text'] == null || row.highlightsMap['title_text'] === false ) ? '' : row.highlightsMap['title_text']}
+								<br/> ${row.highlightsMap['content_text'] === false? '' : row.highlightsMap['content_text']}
+
+
+							</td>
+							<td>${row.writer}
+							</td>
+
+
+
+
 							<td>${dayjs(row.createdDate).format('YYYY-MM-DD HH:mm')}</td>
 
 						</tr>
@@ -228,10 +246,10 @@
 				// 1. 검색 폼
 				const form = document.getElementById('searchForm');
 
-				if(form.keyword.value) {
+				//if(form.keyword.value) {
 					// alert("" + document.querySelector('.tb').getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[2].innerHTML);
-					document.getElementsByTagName("table")[0].getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[2].innerHTML = "제목 또는 첨부파일명";
-				}
+				//	document.getElementsByTagName("table")[0].getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[2].innerHTML = "제목 또는 첨부파일명";
+				//}
 
 				// 1. drawPage() 의 각 버튼에 선언된 onclick 이벤트를 통해 전달되는 page(페이지 번호)를 기준으로 객체 생성
 				// searchType과 keyword 추가
@@ -249,12 +267,7 @@
 				 *    URI + 쿼리 스트링에 해당하는 주소로 이동
 				 *    (해당 함수가 리턴해주는 값을 브라우저 콘솔(console)에 찍어보면 쉽게 이해)
 				 */
-				alert(location.pathname);
-				if(form.keyword.value) {
-					location.href = '/post/searchlist.do' + '?' + new URLSearchParams(queryParams).toString();
-				} else {
-					location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
-				}
+				location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
 			}
 
 		/*]]>*/

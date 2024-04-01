@@ -1,6 +1,9 @@
 package com.se.board.domain.post;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,5 +25,10 @@ public class PostResponse {
 	private Long postId;					// es file_id
 	private Long fileId;					// es file_id
 	private String savedFilename;			// es file_id
+
+
+	// highlight 추가
+
+	private Map<String, List<String>> highlightsMap = new HashMap<>();
 
 }

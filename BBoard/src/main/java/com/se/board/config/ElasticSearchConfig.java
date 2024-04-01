@@ -180,7 +180,7 @@ public class ElasticSearchConfig {
 							.setSSLContext(sslContext)
 							.setDefaultCredentialsProvider(credentialsProvider)
 							.setConnectionReuseStrategy((response, context) -> true) 	// keepAlive use true
-							.setKeepAliveStrategy((response, context) -> 300); 			// keepAlive timeout sec
+							.setKeepAliveStrategy((response, context) -> 1500); 			// keepAlive timeout sec .setKeepAliveStrategy((response, context) -> 300);
 				});
 
 //		keep-alive를 사용해 connection을 재상요 할 수 있도록 함

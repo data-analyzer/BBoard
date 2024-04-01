@@ -61,6 +61,26 @@ section:first-child, #tabmenu + section {margin-top:0;}
 .tb_row td {height:40px;}
 .tb_row .btns {height:38px; line-height:38px;}
 .viewcon {min-height:100px;}
+
+.tb_noneborder {width:100%; border:1px solid #ffffff; margin-top:20px;}
+
+
+.tb_noneborder_col th {border-bottom:0px; }
+.tb_noneborder_col td {text-align:center;}
+/*
+.tb_noneborder_col thead th {background:#ffffff; border-color:rgba(255,255,255,0.2); color:#fff;}
+.tb_noneborder_col .no_data_msg {padding:50px 0;}
+*/
+
+/*
+.tb_noneborder_row {border-top:2px solid #6f8294;}
+.tb_noneborder_row th, .tb_noneborder_row td {padding:8px 12px;}
+.tb_noneborder_row th {background:#f6f7f8; text-align:left;}
+.tb_noneborder_row td {height:40px;}
+.tb_noneborder_row .btns {height:38px; line-height:38px;}
+.viewcon {min-height:100px;}
+*/
+
 /* 게시글정보 */
 .add_info {font-size:13px; font-weight:300; margin-top:10px;}
 .add_info > span {position:relative; display:inline-block; padding:0 10px; color:#999;}

@@ -4,16 +4,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -38,6 +42,48 @@ final class PostEsHelper {
 	private static final int AUTO_COMPLETE_LIMIT = 10;
 
 	private final ObjectMapper objectMapper;
+
+//	public PostEsHelper() {
+//		There was an unexpected error (type=Internal Server Error, status=500).
+//		com.fasterxml.jackson.core.exc.StreamConstraintsException: String length (20054016) exceeds the maximum length (20000000)
+//		ElasticsearchException[com.fasterxml.jackson.core.exc.StreamConstraintsException: String length (20054016) exceeds the maximum length (20000000)]; nested: StreamConstraintsException[String length (20054016) exceeds the maximum length (20000000)];
+//			at com.se.board.domain.post.PostEsService.bulkDocument(PostEsService.java:107)
+//		==> ?
+//		https://github.com/FasterXML/jackson-core/issues/863
+//		motlin commented on Apr 28, 2023
+//		Thank you @pjfanning.
+//
+//		That comment shows that we're able to set the max length higher with code like:
+//
+//		objectMapper.getFactory()
+//				.setStreamReadConstraints(StreamReadConstraints.builder().maxStringLength(10_000_000).build())
+//		I'm able to effectively disable the feature by setting the max length to Integer.MAX_VALUE, but not 0.
+//
+//		ObjectMapper objectMapper = ...;
+//		StreamReadConstraints streamReadConstraints = StreamReadConstraints
+//		    .builder()
+//		    .maxStringLength(Integer.MAX_VALUE)
+//		    .build();
+//		objectMapper.getFactory().setStreamReadConstraints(streamReadConstraints);
+//		I'm going to set the max length high to unblock the upgrade. It's not clear to me if this is a good idea or if this indicates a real performance problem in my code. Are there other options I ought to consider?
+
+
+//		objectMapper = new ObjectMapper();
+//		StreamReadConstraints streamReadConstraints = StreamReadConstraints
+//				.builder().maxStringLength(20000000)
+//				.build();
+//		objectMapper.getFactory().setStreamReadConstraints(StreamReadConstraints.builder().maxStringLength(50_000_000).build());
+//	}
+
+//	public PostEsHelper () {
+//		objectMapper = new ObjectMapper();
+//
+//		StreamReadConstraints streamReadConstraints = StreamReadConstraints
+//	    .builder()
+//	    .maxStringLength(Integer.MAX_VALUE)
+//	    .build();
+//		objectMapper.getFactory().setStreamReadConstraints(streamReadConstraints);
+//	}
 
 	public GetRequest createGetByIdRequest(String id) {
 		return new GetRequest(POST_INDEX, id);
@@ -96,8 +142,29 @@ final class PostEsHelper {
 		boolQueryBuilder.should().add(QueryBuilders.matchQuery("title_text", query).boost(10.0f));
 		boolQueryBuilder.should().add(QueryBuilders.matchQuery("content_text", query));
 
+		// creating HighlightBuilder  added
+		HighlightBuilder highlightBuilder = new HighlightBuilder();
+		// create a filed javaapi.client.highlighter for the cotent field
+		HighlightBuilder.Field highlightTitle = new HighlightBuilder.Field("title_text");
+		// set field javaapi.client.highlighter type
+		highlightTitle.highlighterType("unified");
+		highlightBuilder.field(highlightTitle);
+
+		// creating HighlightBuilder  added
+//		HighlightBuilder highlightBuilder = new HighlightBuilder();
+		// create a filed javaapi.client.highlighter for the cotent field
+		HighlightBuilder.Field highlightContent = new HighlightBuilder.Field("content_text");
+		// set field javaapi.client.highlighter type
+		highlightContent.highlighterType("unified");
+		highlightBuilder.field(highlightContent);
+
+
 		SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource();
 		searchSourceBuilder.query(boolQueryBuilder);
+
+		// sets
+		searchSourceBuilder.highlighter(highlightBuilder);
+
 		searchSourceBuilder.from(COUNT_PER_PAGE * (page - 1));
 		searchSourceBuilder.size(COUNT_PER_PAGE);
 
@@ -257,7 +324,31 @@ final class PostEsHelper {
 //				searchedBooks.add(book);
 				PostResponse post = objectMapper.readValue(hit.getSourceAsString(), PostResponse.class);
 
-				log.debug("stage ("  + stage + ") => post.title: " + post.getTitle() + ", post.content: " + post.getContent());
+				// highlight add
+				Map<String, HighlightField> highlightFieldMap = hit.getHighlightFields();
+				if(!highlightFieldMap.isEmpty()) {
+					for (Map.Entry<String, HighlightField> entry : highlightFieldMap.entrySet()) {
+						post.getHighlightsMap()
+						.put(entry.getKey(), Arrays.stream(entry.getValue().getFragments()).map(Text::toString).collect(Collectors.toList()));
+					}
+				}
+
+				log.debug("stage ("  + stage + ") => post.title: " + post.getTitle());
+				// log.debug("stage ("  + stage + ") => post.content: " + post.getContent());
+				// title_text, content_text
+				for (Map.Entry<String, List<String>> entrySet : post.getHighlightsMap().entrySet()) {
+					//System.out.println(entrySet.getKey() + " : " + entrySet.getValue());
+					log.debug("                       => "+ entrySet.getKey() +" : " + entrySet.getValue());
+					List<String> newList = new ArrayList<>();
+					for (String v : entrySet.getValue()) {
+
+						newList.add(replace(v));
+					}
+					entrySet.setValue(newList);
+					//String list,  for entrySet.getValue().get(0);
+				}
+
+
 				list.add(post);
 			} catch (JsonProcessingException e) {
 				log.error("Json Parse Exception in parsing searched Post(or File) info. Post(or File)=" + hit.getSourceAsString(), e);
@@ -271,6 +362,19 @@ final class PostEsHelper {
 		return postResponse;
 	}
 
+
+	private String replace (String s) {
+		String str = "";
+
+		if(s == null || "".equals(s)) {
+			return s;
+		}
+
+		str = s.replaceAll("<em>", "<font size='4' color='#24A6BD' style='italic' weight='600'>");
+		str = str.replaceAll("</em>", "</font>");
+
+		return str;
+	}
 
 	SuggestResponseDto createSuggestResponseDto(SearchResponse response) {
 
