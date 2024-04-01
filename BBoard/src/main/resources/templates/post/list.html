@@ -7,7 +7,7 @@
 	<th:block layout:fragment="content">
 		<div class="page_tits">
 			<h3>게시판 관리</h3>
-			<p class="path"><strong>현재 위치 :</strong> <span>게시판 관리</span> <span>리스트형</span> <span>리스트</span></p>
+			<p class="path"><strong>현재 위치 :</strong> <span>게시판 관리</span> <span>검색 결과</span></p>
 		</div>
 
 		<div class="content">
@@ -249,7 +249,6 @@
 				 *    URI + 쿼리 스트링에 해당하는 주소로 이동
 				 *    (해당 함수가 리턴해주는 값을 브라우저 콘솔(console)에 찍어보면 쉽게 이해)
 				 */
-				alert(location.pathname);
 				if(form.keyword.value) {
 					location.href = '/post/searchlist.do' + '?' + new URLSearchParams(queryParams).toString();
 				} else {

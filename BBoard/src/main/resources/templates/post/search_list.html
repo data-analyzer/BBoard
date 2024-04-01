@@ -63,7 +63,7 @@
 
 				<!--/* 버튼 */-->
 				<p class="btn_set tr">
-					<a th:href="@{/post/write.do}" class="btns bnt_st3 btn_mid">글쓰기</a>
+					<a th:href="@{/post/list.do}" class="btns bnt_st3 btn_mid">목록</a>
 				</p>
 			</section>
 		</div> <!--/* .content */-->
@@ -159,7 +159,7 @@
 
 
 							<td>${(row.highlightsMap['title_text'] == null || row.highlightsMap['title_text'] === false ) ? '' : row.highlightsMap['title_text']}
-								<br/> ${row.highlightsMap['content_text'] === false? '' : row.highlightsMap['content_text']}
+								<br/> ${(row.highlightsMap['content_text'] == null || row.highlightsMap['content_text'] === false) ? '' : row.highlightsMap['content_text']}
 
 
 							</td>
