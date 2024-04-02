@@ -21,12 +21,29 @@
 								<option value="title">제목</option>
 								<option value="content">내용</option>
 								<option value="writer">작성자</option>
+								<option value="selectSuggestItem" hidden>선택</option>
 							</select>
-							<input type="text" id="keyword" name="keyword" placeholder="키워드를 입력해 주세요." title="키워드 입력" onkeyup="onKeyup(this);"/>
+							<!-- input type="text" id="keyword" name="keyword" placeholder="키워드를 입력해 주세요." title="키워드 입력" onkeyup="onKeyup(this);onChange(this);"/ --> <!-- OK -->
+							<input type="text" id="keyword" name="keyword" placeholder="키워드를 입력해 주세요." title="키워드 입력" onkeydown="onKeydown(this);" onkeyup="onChange(this);" />
+
 							<button type="button" class="bt_search" onclick="movePage(1);"><i class="fas fa-search"></i><span class="skip_info">검색</span></button>
+						</div>
+						<!-- br/><br/ -->
+
+						<!-- 추천창 -->
+						<!-- div id="suggestBox" class="cm_list, invisible">
+							<div id="suggestedItems"></div>
+						</div -->
+
+						<div id="suggestBox" class="invisible">
+							<div id="suggestedItems"></div>
 						</div>
 					</form>
 				</div>
+				<!-- 위치를....??? -->
+				<!-- div id="suggestBox" class="invisible">
+					<div id="suggestedItems"></div>
+				</div -->
 
 				<!--/*리스트 */-->
 				<table class="tb_noneborder tb_noneborder_col">
@@ -81,6 +98,7 @@
 
 			// 쿼리 스트링 파라미터 셋팅
 			function setQueryStringParams() {
+
 
 				if (!location.search) {
 					return false;
@@ -245,7 +263,6 @@
 
 				// 1. 검색 폼
 				const form = document.getElementById('searchForm');
-
 				//if(form.keyword.value) {
 					// alert("" + document.querySelector('.tb').getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[2].innerHTML);
 				//	document.getElementsByTagName("table")[0].getElementsByTagName('thead')[0].getElementsByTagName('tr')[0].getElementsByTagName('th')[2].innerHTML = "제목 또는 첨부파일명";
@@ -273,11 +290,148 @@
 
 
 			function onKeyup(i) {
+				//const form = document.getElementById('searchForm');
+				$('#searchForm').keypress(function (e) {
+				//form.keypress( function (e) {
+					if(e.keyCode === 13) {
+						movePage(1);
+					}
+				});
+			}
+
+			function onKeydown(i) {
 				$('#searchForm').keypress(function (e) {
 					if(e.keyCode === 13) {
 						movePage(1);
 					}
 				});
+			}
+
+
+			function onChange(i) {
+				const form = document.getElementById('searchForm');
+
+				if(form.keyword.value.length < 2) {
+					return false;
+				}
+				//alert(form.keyword.value);
+
+//				const queryParams = {
+//						page: (page) ? page : 1,
+//						recordSize: 10,
+//						pageSize: 10,
+//						searchType: form.searchType.value,
+//						keyword: i.value
+//					}
+//				location.href = location.pathname + '?' + new URLSearchParams(queryParams).toString();
+
+		    	const uri = `/suggest2`;
+		    	const params = {
+					page : 1,
+					recordSize : 5,
+					pageSize : 10,
+					searchType: form.searchType.value,
+					keyword: form.keyword.value
+		    	}
+
+		    	const response = getJson(uri, params);
+				console.log(response);
+		    	//alert(response['texts']);
+
+
+		    	drawSuggestion(response['texts']);
+
+
+			}
+
+
+			// 참고
+		    function drawSuggestion(list) {
+		    	const recommendBox = document.querySelector("#suggestBox");
+				// const recommendBox = document.querySelector(".invisible");
+				 // const recommendBox = document.querySelector(".cm_list");
+
+				//alert(recommendBox.className);
+				//alert(recommendBox.classList.length);
+
+
+				//for(let i=0; i < recommendBox.classList.length ; i++) {
+				//	alert("before : " + recommendBox.classList.item(i));
+				//}
+
+
+				if(!list.length) {
+		    		//document.querySelector('.cm_list').innerHTML = '<div class="cm_none"><p>등록된 댓글이 없습니다.</p></div>';
+		    		return false;
+		    	}
+
+				// invisible 을 지워준다
+				recommendBox.classList.remove('invisible');
+				// const keyword = document.getElementByid('keyword');
+
+				//for(let i=0; i < recommendBox.classList.length ; i++) {
+				//	alert("after : " + recommendBox.classList.item(i));
+				//}
+
+
+				// 기존 검색 추천 데이터를 삭제하고 새로 추천해주기 (안 그러면 계속 추가됨)
+				//recommandBox.innerHTML = '';
+
+				//const suggestedItems = document.createElement('div');
+				//suggestedItems.id = "suggestedItems";
+
+				//recommandBox.appendChild(suggestedItems);
+
+				//const suggestedItems = document.getElementById("suggestedItems");
+				const suggestedItems = document.querySelector("#suggestedItems");
+
+				suggestedItems.innerHTML = "";
+
+				//for(var i in list) {
+				//}
+
+
+		    	let suggestHtml = '';
+
+		    	list.forEach(row => {
+		    		suggestHtml += `
+    					<div class="item" onclick="seletcItem(this);">
+    						<p>${row}</p>
+    					</div>
+		    		`;
+		    	});
+
+		    	// alert(suggestHtml);
+		    	// document.querySelector('.cm_list').innerHTML = commentHtml;
+
+		    	suggestedItems.innerHTML = suggestHtml;
+		    }
+
+
+			function seletcItem(selected) {
+				const form = document.getElementById('searchForm');
+
+
+
+				// document.getElementById("keyword").value = selected.textContent.split(' ')[0];
+				var str = selected.textContent;
+				form.keyword.value = str.trim();
+
+				const recommendBox = document.querySelector("#suggestBox");
+				// const recommendBox = document.querySelector(".cm_list");
+
+				recommendBox.classList.add("invisible");
+				//alert(recommendBox.className);
+
+				//recommendBox.className = "invisible";
+				//alert(recommendBox.className);
+
+
+
+				document.querySelectorAll("select[name=searchType] option")[4].selected = true;
+
+				movePage(1);
+
 			}
 
 		/*]]>*/

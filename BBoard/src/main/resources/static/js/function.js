@@ -104,3 +104,25 @@ function shortenWords(str, length) {
 
 	return result;
 }
+
+
+function getJsonAsync(uri, params) {
+
+	let json = {};
+
+	$.ajax({
+		url : uri,
+		type : 'get',
+		dataType : 'json',
+		data : params,
+		async : true,
+		success : function (response) {
+			json = response;
+		},
+		error : function (request, status, error) {
+			console.log(error);
+		}
+	});
+
+	return json;
+}

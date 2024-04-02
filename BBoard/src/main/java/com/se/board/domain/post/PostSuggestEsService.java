@@ -9,7 +9,8 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.stereotype.Service;
 
-import com.se.board.common.book.HangulUtil;
+import com.se.board.common.book.EsKoUtil;
+//import com.se.board.common.book.HangulUtil;
 import com.se.board.common.dto.SearchDto;
 import com.se.board.domain.book.SlackLogBot;
 
@@ -28,7 +29,8 @@ public class PostSuggestEsService {
 		String query = params.getKeyword();
 		log.debug(" query : " + query);
 
-		if(HangulUtil.isChosungQuery(query)) {
+		//if(HangulUtil.isChosungQuery(query)) {
+		if(EsKoUtil.isFcQuery(query)) {
 			PostSuggestResponse suggestResponse = fcSuggest(query);
 			if(hasSuggests(suggestResponse)) {
 				log.debug("fcSuggest : "  + suggestResponse.getTexts());
@@ -58,7 +60,8 @@ public class PostSuggestEsService {
 	}
 
 	private PostSuggestResponse fcSuggest(String query) throws ElasticsearchException {
-		query = HangulUtil.decomposeLayeredJaum(query);
+		//query = HangulUtil.decomposeLayeredJaum(query);
+		query = EsKoUtil.decomposeDualConsonant(query);
 		String[] includes = {"title"};
 		SearchRequest searchRequest = postEsHelper.createFcSearchRequest(query, 1, includes);
 		try {

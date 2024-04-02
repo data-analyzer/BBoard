@@ -164,9 +164,51 @@ h4 + .search_box {margin-top:10px;}
 .search_box {background:#f7f8fa; border:1px solid #cfcfcf; box-shadow:0 2px 0px rgba(80,80,80,0.05); padding:10px 20px; margin:25px 0; overflow:hidden;}
 .search_box input[type="text"], .search_box select, .search_box button {height:34px;}
 .search_box input[type="text"], .search_box select {width:auto; padding:4px 5px; border:1px solid #ddd;}
-.search_box input[type="text"] {width:170px;}
+.search_box input[type="text"] {width:500px;}
 .sch_group button {background:#586a7d; border:0; padding:0; color:#fff; font-weight:bold; width:42px; line-height:34px; border-radius:3px; vertical-align:top; position:relative;}
 .search_box input#sDate {margin-right:3px !important;}
+
+/* 추천창 add */
+.search_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#name {
+    width: 200px;
+    height: 20px;
+}
+
+.invisible{
+    display: none;
+}
+
+
+#suggestBox {
+    margin-top: 1px;
+    background: white;
+    padding: 0 10px;
+    border: 1px solid #cfcfcf;
+    width: 500px;
+    margin-left: 95px;
+
+}
+
+#suggestedItems{
+    height:100px;
+    width: 500px;
+    overflow: auto; /* 스크롤바 추가 */
+}
+
+/* 마우스 올리면 색 변화 */
+.item:hover{
+    color: #fff;
+    background-color: lightgreen;
+}
+
+/* 추천창 end */
 
 /* paging ------------------------------- */
 .paging * {box-sizing:border-box;}
@@ -333,3 +375,9 @@ input[readonly], select[readonly], textarea[readonly], .readonly, input[disabled
 .popLayer .pop_container.scroll_cont {max-height:470px; overflow:auto;}
 .popLayer .pop_container .btn_set {margin:30px 0 0;}
 .popLayer .pop_container .btn_set > button {height:40px; line-height:38px; font-size:15px; min-width:80px;}
+
+
+
+/* 추천창 https://skyjwoo.tistory.com/entry/웹-검색어-추천-프론트엔드-작성하기 [jeongstudy:티스토리] */
+
+/* 추천창 end */
