@@ -31,7 +31,7 @@
 							</li>
 							<li>
 								<label for="password" class="skip_info">비밀번호</label>
-								<input type="password" id="password" name="password" title="비밀번호" placeholder="비밀번호" onkeyup="onKeyup(this);"/>
+								<input type="password" id="password" name="password" title="비밀번호" placeholder="비밀번호" onkeydown="onKeydown(this);"/>
 							</li>
 						</ul>
 						<button type="button" onclick="login();" class="login_btn">로그인</button>
@@ -221,7 +221,7 @@
 //		}
 
 		// OK
-		function onKeyup(i) {
+		function onKeydown(i) {
 			$('#loginForm').keypress(function (e) {
 				if(e.keyCode === 13) {
 					login();
