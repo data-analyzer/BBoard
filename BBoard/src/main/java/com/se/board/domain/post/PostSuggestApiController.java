@@ -20,10 +20,19 @@ public class PostSuggestApiController {
 
 	private final PostSuggestEsService postSuggestEsService;
 
+	// to test
+	private final PostSuggest3EsService postSuggest3EsService;
+
 	@GetMapping("/suggest2")
 	public PostSuggestResponse suggest (final SearchDto params) {
 		log.debug(" params.getKeyword : " + params.getKeyword());
 		return postSuggestEsService.suggest(params);
+	}
+
+	@GetMapping("/suggest3")
+	public PostSuggestResponse suggest3 (final SearchDto params) {
+		log.debug(" params.getKeyword : " + params.getKeyword());
+		return postSuggest3EsService.suggest3(params);
 	}
 
 	@ExceptionHandler(ElasticsearchException.class)

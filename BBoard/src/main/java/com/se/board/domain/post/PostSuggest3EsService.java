@@ -20,58 +20,54 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PostSuggestEsService {
+public class PostSuggest3EsService {
 
 	private final RestHighLevelClient esClient;
-	private final PostEsHelper postEsHelper;
+	private final PostEsHelper3 postEsHelper3;
 
-	public PostSuggestResponse suggest(SearchDto params) {
+	public PostSuggestResponse suggest3(SearchDto params) {
 		String query = params.getKeyword();
-		log.debug(" query : " + query);
+		log.debug(" suggest3 query : " + query);
 
 		//if(HangulUtil.isChosungQuery(query)) {
 		if(EsKoUtil.isFcQuery(query)) {
-			log.debug("11111111111111111111111");
-			PostSuggestResponse suggestResponse = fcSuggest(query);
+			PostSuggestResponse suggestResponse = fcSuggest3(query);
 			if(hasSuggests(suggestResponse)) {
-				log.debug("fcSuggest : "  + suggestResponse.getTexts().size());
+				log.debug("suggest3 fcSuggest : "  + suggestResponse.getTexts().size());
 				return suggestResponse;
 			}
 		} else {
-			log.debug("22222222222222222222222222");
-			PostSuggestResponse suggestResponse = autoComplete(query);
+			PostSuggestResponse suggestResponse = autoComplete3(query);
 			if(hasSuggests(suggestResponse)) {
-				log.debug("autoComplete : "  + suggestResponse.getTexts().size());
+				log.debug("suggest3 autoComplete : "  + suggestResponse.getTexts().size());
 				return suggestResponse;
 			}
 		}
 
-		log.debug("33333333333333333333333");
-		PostSuggestResponse suggestResponse = koToEnSuggest(query);
+		PostSuggestResponse suggestResponse = koToEnSuggest3(query);
 		if(hasSuggests(suggestResponse)) {
-			log.debug("koToEnSuggest : "  + suggestResponse.getTexts().size());
+			log.debug("suggest3 koToEnSuggest : "  + suggestResponse.getTexts().size());
 			return suggestResponse;
 		}
 
-		log.debug("44444444444444444444444444");
-		suggestResponse = enToKoSuggest(query);
+		suggestResponse = enToKoSuggest3(query);
 		if(hasSuggests(suggestResponse) ) {
-			log.debug("enToKoSuggest : "  + suggestResponse.getTexts().size());
+			log.debug("suggest3 enToKoSuggest : "  + suggestResponse.getTexts().size());
 			return suggestResponse;
 		}
 
 		return PostSuggestResponse.emptyResponse();
 	}
 
-	private PostSuggestResponse fcSuggest(String query) throws ElasticsearchException {
+	private PostSuggestResponse fcSuggest3(String query) throws ElasticsearchException {
 		//query = HangulUtil.decomposeLayeredJaum(query);
-		log.debug("  PostSuggestEsService.fcSuggest( " + query + " )");
+		log.debug("  PostSuggest3EsService.fcSuggest( " + query + " )");
 		query = EsKoUtil.decomposeDualConsonant(query);
 		String[] includes = {"title"};
-		SearchRequest searchRequest = postEsHelper.createFcSearchRequest(query, 1, includes);
+		SearchRequest searchRequest = postEsHelper3.createFcSearchRequest(query, 1, includes);
 		try {
 			SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
-			return postEsHelper.createTitleSuggestResponse(response);
+			return postEsHelper3.createTitleSuggestResponse(response);
 		} catch (IOException e) {
 			log.error("query=" + query, e);
 			SlackLogBot.sendError(e);
@@ -79,12 +75,12 @@ public class PostSuggestEsService {
 		}
 	}
 
-	private PostSuggestResponse autoComplete(String query) throws ElasticsearchException {
+	private PostSuggestResponse autoComplete3(String query) throws ElasticsearchException {
 		log.debug("  PostSuggestEsService.autoComplete( " + query + " )");
-		SearchRequest searchRequest = postEsHelper.createAutoCompleteSearchRequest(query);
+		SearchRequest searchRequest = postEsHelper3.createAutoCompleteSearchRequest(query);
 		try {
 			SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
-			return postEsHelper.createTitleSuggestResponse(response);
+			return postEsHelper3.createTitleSuggestResponse(response);
 		} catch (IOException e) {
 			log.error("query=" + query, e);
 			SlackLogBot.sendError(e);
@@ -92,14 +88,14 @@ public class PostSuggestEsService {
 		}
 	}
 
-	private PostSuggestResponse koToEnSuggest(String query) throws ElasticsearchException {
+	private PostSuggestResponse koToEnSuggest3(String query) throws ElasticsearchException {
 		log.debug("  PostSuggestEsService.koToEnSuggest( " + query + " )");
 		String[] includes = {"title"};
 
-		SearchRequest searchRequest = postEsHelper.createKoToEnSearchRequest(query, 1, includes);
+		SearchRequest searchRequest = postEsHelper3.createKoToEnSearchRequest(query, 1, includes);
 		try {
 			SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
-			return postEsHelper.createTitleSuggestResponse(response);
+			return postEsHelper3.createTitleSuggestResponse(response);
 		} catch (IOException e) {
 			log.error("query=" + query, e);
 			SlackLogBot.sendError(e);
@@ -107,14 +103,14 @@ public class PostSuggestEsService {
 		}
 	}
 
-	private PostSuggestResponse enToKoSuggest(String query) throws ElasticsearchException {
-		log.debug("  PostSuggestEsService.enToKoSuggest( " + query + " )");
+	private PostSuggestResponse enToKoSuggest3(String query) throws ElasticsearchException {
+		log.debug("  PostSuggestEsService.koToEnSuggest( " + query + " )");
 		String[] includes = {"title"};
 
-		SearchRequest searchRequest = postEsHelper.createEnToKoSearchRequest(query, 1, includes);
+		SearchRequest searchRequest = postEsHelper3.createEnToKoSearchRequest(query, 1, includes);
 		try {
 			SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
-			return postEsHelper.createTitleSuggestResponse(response);
+			return postEsHelper3.createTitleSuggestResponse(response);
 		} catch (IOException e) {
 			log.error("query=" + query, e);
 			SlackLogBot.sendError(e);

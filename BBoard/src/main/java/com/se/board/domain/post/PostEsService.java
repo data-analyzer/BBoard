@@ -433,7 +433,7 @@ public class PostEsService {
 		}
 
 //		return BookSearchResponseDto.emptyResponse();
-		return new PagingResponse<PostResponse>(Collections.emptyList(), null, true);
+		return new PagingResponse<PostResponse>(Collections.emptyList(), null, Boolean.TRUE);
 	}
 
 //	private BookSearchResponseDto searchTitle(String query, int page) {
@@ -464,7 +464,7 @@ public class PostEsService {
 
 //		return BookSearchResponseDto.emptyResponse();
 		//return PagingResponse<PostResponse>.emptyResponse();
-		return new PagingResponse<PostResponse>(Collections.emptyList(), null, true);
+		return new PagingResponse<PostResponse>(Collections.emptyList(), null, Boolean.TRUE);
 	}
 
 //	private BookSearchResponseDto searchTitleAuthor(String query, int page) {
@@ -494,7 +494,7 @@ public class PostEsService {
 		}
 
 //		return BookSearchResponseDto.emptyResponse();
-		return new PagingResponse<PostResponse>(Collections.emptyList(), null, true);
+		return new PagingResponse<PostResponse>(Collections.emptyList(), null, Boolean.TRUE);
 	}
 
 	private PagingResponse<PostResponse> searchTitleWriterContent(String query, int page) {
@@ -522,7 +522,7 @@ public class PostEsService {
 		}
 
 //		return BookSearchResponseDto.emptyResponse();
-		return new PagingResponse<PostResponse>(Collections.emptyList(), null, true);
+		return new PagingResponse<PostResponse>(Collections.emptyList(), null, Boolean.TRUE);
 	}
 
 	private PagingResponse<PostResponse> searchTitleContent(String query, int page) {
@@ -550,7 +550,7 @@ public class PostEsService {
 		}
 
 //		return BookSearchResponseDto.emptyResponse();
-		return new PagingResponse<PostResponse>(Collections.emptyList(), null, true);
+		return new PagingResponse<PostResponse>(Collections.emptyList(), null, Boolean.TRUE);
 	}
 
 //	private BookSearchResponseDto searchByChosung(String query, int page) {
@@ -582,7 +582,7 @@ public class PostEsService {
 		}
 
 //		return BookSearchResponseDto.emptyResponse();
-		return new PagingResponse<PostResponse>(Collections.emptyList(), null, true);
+		return new PagingResponse<PostResponse>(Collections.emptyList(), null, Boolean.TRUE);
 	}
 
 //	private BookSearchResponseDto searchEngToHan(String query, int page) {
@@ -613,7 +613,7 @@ public class PostEsService {
 		}
 
 //		return BookSearchResponseDto.emptyResponse();
-		return new PagingResponse<PostResponse>(Collections.emptyList(), null, true);
+		return new PagingResponse<PostResponse>(Collections.emptyList(), null, Boolean.TRUE);
 	}
 
 //	private BookSearchResponseDto searchHanToEng(String query, int page) {
@@ -644,6 +644,6 @@ public class PostEsService {
 		}
 
 //		return BookSearchResponseDto.emptyResponse();
-		return new PagingResponse<PostResponse>(Collections.emptyList(), null, true);
+		return new PagingResponse<PostResponse>(Collections.emptyList(), null, Boolean.TRUE);
 	}
 }

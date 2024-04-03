@@ -26,6 +26,8 @@ public class PostResponse {
 	private Long fileId;					// es file_id
 	private String savedFilename;			// es file_id
 
+	private float score;
+
 
 	// highlight 추가
 

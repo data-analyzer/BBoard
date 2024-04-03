@@ -22,7 +22,7 @@
 								<option value="content">내용</option>
 								<option value="writer">작성자</option>
 							</select>
-							<input type="text" id="keyword" name="keyword" placeholder="키워드를 입력해 주세요." title="키워드 입력" onkeydown="onKeydown(this);"/>
+							<input type="text" id="keyword" name="keyword" placeholder="키워드를 입력해 주세요." title="키워드 입력" onkeydown="onKeydown(this);" />
 							<button type="button" class="bt_search" onclick="movePage(1);"><i class="fas fa-search"></i><span class="skip_info">검색</span></button>
 						</div>
 
@@ -126,8 +126,6 @@
 				    	let suggestHtml = '';
 
 				    	response['texts'].forEach((row) => {
-							// textEl.textContent = e.target.value;
-
 				    		suggestHtml += `
 		    					<div class="item" onclick="seletcItem(this);">
 		    						<p>${row}</p>
@@ -140,6 +138,54 @@
 						recommendBox.classList.add('invisible');
 					}
 				});
+
+				form.keyword.addEventListener("focusin", (e) => {
+
+					if (e.target.value.length >= 2) {
+
+				    	const uri = `/suggest2`;
+				    	const params = {
+							page : 1,
+							recordSize : 5,
+							pageSize : 10,
+							searchType: form.searchType.value,
+							keyword: form.keyword.value
+				    	}
+
+				    	const response = getJson(uri, params);
+
+				    	if(!response['texts'].length) {
+				    		suggestedItems.innerHTML = "";
+				    		recommendBox.classList.add('invisible');
+				    		return false;
+				    	}
+
+				    	recommendBox.classList.remove('invisible');
+
+				    	suggestedItems.innerHTML = "";
+
+				    	let suggestHtml = '';
+
+				    	response['texts'].forEach((row) => {
+				    		suggestHtml += `
+		    					<div class="item" onclick="seletcItem(this);">
+		    						<p>${row}</p>
+		    					</div>
+				    		`;
+						});
+
+				    	suggestedItems.innerHTML = suggestHtml;
+					} else {
+						recommendBox.classList.add('invisible');
+					}
+				});
+
+				// 정상작동하나 추천검색어 선택 시 먼저 실행되어 문제되어 막음
+				//form.keyword.addEventListener("focusout", (e) => {
+		    	//	suggestedItems.innerHTML = "";
+		    	//	recommendBox.classList.add('invisible');
+		    	//	return false;
+				//});
 			}
 
 			function seletcItem(selected) {

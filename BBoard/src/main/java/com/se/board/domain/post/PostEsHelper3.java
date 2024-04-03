@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-final class PostEsHelper {
+final class PostEsHelper3 {
 	// 마지막 메소드 createSuggestResponseDto 차후 수정 필요
 
 //	private static final String POST_INDEX = "ingest-test-v1";
