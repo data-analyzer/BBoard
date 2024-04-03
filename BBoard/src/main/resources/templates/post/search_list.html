@@ -173,14 +173,13 @@
 							<td>${row.noticeYn === false ? num-- : '공지'}</td>
 							<td class="tl"><a href="javascript:void(0);" onclick="goViewPage(${row.id}, ${row.fileId});">${row.title}</a></td>
 
-
-
-
-							<td>${(row.highlightsMap['title_text'] == null || row.highlightsMap['title_text'] === false ) ? '' : row.highlightsMap['title_text']}
+							<td><a href="javascript:void(0);" onclick="goViewPage(${row.id}, ${row.fileId});">
+								${(row.highlightsMap['title_text'] == null || row.highlightsMap['title_text'] === false ) ? '' : row.highlightsMap['title_text']}
 								<br/> ${(row.highlightsMap['content_text'] == null || row.highlightsMap['content_text'] === false) ? '' : row.highlightsMap['content_text']}
-
-
+								<br/> ${(row.highlightsMap['writer_text'] == null || row.highlightsMap['writer_text'] === false) ? '' : row.highlightsMap['writer_text']}
+								</a>
 							</td>
+
 							<td>${row.writer}
 							</td>
 
@@ -359,9 +358,13 @@
 				//	alert("before : " + recommendBox.classList.item(i));
 				//}
 
+				const suggestedItems = document.querySelector("#suggestedItems");
 
 				if(!list.length) {
 		    		//document.querySelector('.cm_list').innerHTML = '<div class="cm_none"><p>등록된 댓글이 없습니다.</p></div>';
+
+		    		suggestedItems.innerHTML = "";
+		    		recommendBox.classList.add('invisible');
 		    		return false;
 		    	}
 
@@ -383,7 +386,7 @@
 				//recommandBox.appendChild(suggestedItems);
 
 				//const suggestedItems = document.getElementById("suggestedItems");
-				const suggestedItems = document.querySelector("#suggestedItems");
+
 
 				suggestedItems.innerHTML = "";
 
@@ -428,7 +431,7 @@
 
 
 
-				document.querySelectorAll("select[name=searchType] option")[4].selected = true;
+				// document.querySelectorAll("select[name=searchType] option")[4].selected = true;
 
 				movePage(1);
 

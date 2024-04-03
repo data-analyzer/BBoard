@@ -191,8 +191,8 @@ h4 + .search_box {margin-top:10px;}
     background: white;
     padding: 0 10px;
     border: 1px solid #cfcfcf;
-    width: 500px;
-    margin-left: 95px;
+    width: 479px;
+    margin-left: 94px;
 
 }
 
@@ -206,6 +206,7 @@ h4 + .search_box {margin-top:10px;}
 .item:hover{
     color: #fff;
     background-color: lightgreen;
+    width: 490px;
 }
 
 /* 추천창 end */

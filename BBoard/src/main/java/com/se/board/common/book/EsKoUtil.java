@@ -49,7 +49,7 @@ public class EsKoUtil {
 
 		float completeKoRatio = (float) cnt / query.length();
 
-		return completeKoRatio > 0.65;
+		return completeKoRatio > 0.3;  // num, space, special char 가 포함되어 보다 정확히 할 필요가 있음 (일단 낮춤)
 	}
 
 	public static final Set<Character> fcSet = new HashSet<>() {

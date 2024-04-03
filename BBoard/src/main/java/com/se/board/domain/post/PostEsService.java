@@ -438,6 +438,7 @@ public class PostEsService {
 
 //	private BookSearchResponseDto searchTitle(String query, int page) {
 	private PagingResponse<PostResponse> searchTitle(String query, int page) {
+		log.debug("  PostEsService.searchTitle(" + query + ", " + page + ")");
 		try {
 			SearchRequest searchRequest = postEsHelper.createTitleSearchRequest(query, page);
 			SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
@@ -469,6 +470,7 @@ public class PostEsService {
 //	private BookSearchResponseDto searchTitleAuthor(String query, int page) {
 //	private PagingResponse<PostResponse> searchTitleAuthor(String query, int page) {
 	private PagingResponse<PostResponse> searchTitleWriter(String query, int page) {
+		log.debug("  PostEsService.searchTitleWriter(" + query + ", " + page + ")");
 		try {
 //			SearchRequest searchRequest = postEsHelper.createTitleAuthorSearchRequest(query, page);
 			SearchRequest searchRequest = postEsHelper.createTitleWriterSearchRequest(query, page);
@@ -496,6 +498,7 @@ public class PostEsService {
 	}
 
 	private PagingResponse<PostResponse> searchTitleWriterContent(String query, int page) {
+		log.debug("  PostEsService.searchTitleWriterContent(" + query + ", " + page + ")");
 		try {
 //			SearchRequest searchRequest = postEsHelper.createTitleAuthorSearchRequest(query, page);
 			SearchRequest searchRequest = postEsHelper.createTitleWriterContentSearchRequest(query, page);
@@ -523,6 +526,7 @@ public class PostEsService {
 	}
 
 	private PagingResponse<PostResponse> searchTitleContent(String query, int page) {
+		log.debug("  PostEsService.searchTitleContent(" + query + ", " + page + ")");
 		try {
 //			SearchRequest searchRequest = postEsHelper.createTitleAuthorSearchRequest(query, page);
 			SearchRequest searchRequest = postEsHelper.createTitleContentSearchRequest(query, page);
@@ -551,6 +555,7 @@ public class PostEsService {
 
 //	private BookSearchResponseDto searchByChosung(String query, int page) {
 	private PagingResponse<PostResponse> searchByFc(String query, int page) {
+		log.debug("  PostEsService.searchByFc(" + query + ", " + page + ")");
 		query = EsKoUtil.decomposeDualConsonant(query);
 		try {
 //			String[] includes = {"isbn13", "title", "author", "publisher", "pubDate", "imageUrl", "description"};
@@ -582,6 +587,7 @@ public class PostEsService {
 
 //	private BookSearchResponseDto searchEngToHan(String query, int page) {
 	private PagingResponse<PostResponse> searchEnToKo(String query, int page) {
+		log.debug("  PostEsService.searchEnToKo(" + query + ", " + page + ")");
 		try {
 //			String[] includes = {"isbn13", "title", "author", "publisher", "pubDate", "imageUrl", "description"};
 			String[] includes = {"createdDate", "postId", "fileId", "title", "content", "writer", "noticeYn", "deleteYn", "savedFilename", "modifiedDate", "deletedDate"};
@@ -612,6 +618,7 @@ public class PostEsService {
 
 //	private BookSearchResponseDto searchHanToEng(String query, int page) {
 	private PagingResponse<PostResponse> searchKoToEn(String query, int page) {
+		log.debug("  PostEsService.searchKoToEn(" + query + ", " + page + ")");
 		try {
 //			String[] includes = {"isbn13", "title", "author", "publisher", "pubDate", "imageUrl", "description"};
 			String[] includes = {"createdDate", "postId", "fileId", "title", "content", "writer", "noticeYn", "deleteYn", "savedFilename", "modifiedDate", "deletedDate"};

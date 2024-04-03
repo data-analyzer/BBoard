@@ -25,6 +25,11 @@
 							<input type="text" id="keyword" name="keyword" placeholder="키워드를 입력해 주세요." title="키워드 입력" onkeydown="onKeydown(this);"/>
 							<button type="button" class="bt_search" onclick="movePage(1);"><i class="fas fa-search"></i><span class="skip_info">검색</span></button>
 						</div>
+
+						<!-- 추천창 -->
+						<div id="suggestBox" class="invisible">
+							<div id="suggestedItems"></div>
+						</div>
 					</form>
 				</div>
 
@@ -75,6 +80,76 @@
 				setQueryStringParams();
 
 				findAllPost();
+
+				// 추천 search_list.html 과 동일 기능이나 다른 방식도 있어서 다르게 구현해봄
+				addEvent();
+
+			}
+
+			// 추천
+			function addEvent() {
+				const form = document.getElementById('searchForm');
+
+				// const inputBox = document.querySelector("input");
+				// const recommendBox = document.querySelector("#recommend");
+				// const texts = document.querySelectorAll(".text");
+
+				const recommendBox = document.querySelector("#suggestBox");
+				const inputBox = form.keyword;
+				const suggestedItems = document.querySelector("#suggestedItems");
+
+				form.keyword.addEventListener("keyup", (e) => {
+
+					if (e.target.value.length >= 2) {
+
+				    	const uri = `/suggest2`;
+				    	const params = {
+							page : 1,
+							recordSize : 5,
+							pageSize : 10,
+							searchType: form.searchType.value,
+							keyword: form.keyword.value
+				    	}
+
+				    	const response = getJson(uri, params);
+
+				    	if(!response['texts'].length) {
+				    		suggestedItems.innerHTML = "";
+				    		recommendBox.classList.add('invisible');
+				    		return false;
+				    	}
+
+				    	recommendBox.classList.remove('invisible');
+
+				    	suggestedItems.innerHTML = "";
+
+				    	let suggestHtml = '';
+
+				    	response['texts'].forEach((row) => {
+							// textEl.textContent = e.target.value;
+
+				    		suggestHtml += `
+		    					<div class="item" onclick="seletcItem(this);">
+		    						<p>${row}</p>
+		    					</div>
+				    		`;
+						});
+
+				    	suggestedItems.innerHTML = suggestHtml;
+					} else {
+						recommendBox.classList.add('invisible');
+					}
+				});
+			}
+
+			function seletcItem(selected) {
+				const form = document.getElementById('searchForm');
+				var str = selected.textContent;
+				form.keyword.value = str.trim();
+				const recommendBox = document.querySelector("#suggestBox");
+				recommendBox.classList.add("invisible");
+				// document.querySelectorAll("select[name=searchType] option")[4].selected = true;
+				movePage(1);
 			}
 
 			// 쿼리 스트링 파라미터 셋팅

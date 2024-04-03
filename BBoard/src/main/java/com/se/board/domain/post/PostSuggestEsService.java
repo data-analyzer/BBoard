@@ -33,26 +33,26 @@ public class PostSuggestEsService {
 		if(EsKoUtil.isFcQuery(query)) {
 			PostSuggestResponse suggestResponse = fcSuggest(query);
 			if(hasSuggests(suggestResponse)) {
-				log.debug("fcSuggest : "  + suggestResponse.getTexts());
+				log.debug("fcSuggest : "  + suggestResponse.getTexts().size());
 				return suggestResponse;
 			}
 		} else {
 			PostSuggestResponse suggestResponse = autoComplete(query);
 			if(hasSuggests(suggestResponse)) {
-				log.debug("autoComplete : "  + suggestResponse.getTexts());
+				log.debug("autoComplete : "  + suggestResponse.getTexts().size());
 				return suggestResponse;
 			}
 		}
 
 		PostSuggestResponse suggestResponse = koToEnSuggest(query);
 		if(hasSuggests(suggestResponse)) {
-			log.debug("koToEnSuggest : "  + suggestResponse.getTexts());
+			log.debug("koToEnSuggest : "  + suggestResponse.getTexts().size());
 			return suggestResponse;
 		}
 
 		suggestResponse = enToKoSuggest(query);
 		if(hasSuggests(suggestResponse) ) {
-			log.debug("enToKoSuggest : "  + suggestResponse.getTexts());
+			log.debug("enToKoSuggest : "  + suggestResponse.getTexts().size());
 			return suggestResponse;
 		}
 
@@ -61,6 +61,7 @@ public class PostSuggestEsService {
 
 	private PostSuggestResponse fcSuggest(String query) throws ElasticsearchException {
 		//query = HangulUtil.decomposeLayeredJaum(query);
+		log.debug("  PostSuggestEsService.fcSuggest( " + query + " )");
 		query = EsKoUtil.decomposeDualConsonant(query);
 		String[] includes = {"title"};
 		SearchRequest searchRequest = postEsHelper.createFcSearchRequest(query, 1, includes);
@@ -75,6 +76,7 @@ public class PostSuggestEsService {
 	}
 
 	private PostSuggestResponse autoComplete(String query) throws ElasticsearchException {
+		log.debug("  PostSuggestEsService.autoComplete( " + query + " )");
 		SearchRequest searchRequest = postEsHelper.createAutoCompleteSearchRequest(query);
 		try {
 			SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
@@ -87,7 +89,9 @@ public class PostSuggestEsService {
 	}
 
 	private PostSuggestResponse koToEnSuggest(String query) throws ElasticsearchException {
+		log.debug("  PostSuggestEsService.koToEnSuggest( " + query + " )");
 		String[] includes = {"title"};
+
 		SearchRequest searchRequest = postEsHelper.createKoToEnSearchRequest(query, 1, includes);
 		try {
 			SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
@@ -100,7 +104,9 @@ public class PostSuggestEsService {
 	}
 
 	private PostSuggestResponse enToKoSuggest(String query) throws ElasticsearchException {
+		log.debug("  PostSuggestEsService.koToEnSuggest( " + query + " )");
 		String[] includes = {"title"};
+
 		SearchRequest searchRequest = postEsHelper.createEnToKoSearchRequest(query, 1, includes);
 		try {
 			SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);

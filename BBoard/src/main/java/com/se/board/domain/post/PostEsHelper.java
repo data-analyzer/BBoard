@@ -96,8 +96,21 @@ final class PostEsHelper {
 		boolQueryBuilder.should()
 				.add(QueryBuilders.matchQuery("title_text", query).operator(Operator.AND));
 
+		// creating HighlightBuilder  added
+		HighlightBuilder highlightBuilder = new HighlightBuilder();
+		// create a filed javaapi.client.highlighter for the title field
+		HighlightBuilder.Field highlightTitle = new HighlightBuilder.Field("title_text");
+		// set field javaapi.client.highlighter type
+		highlightTitle.highlighterType("unified");
+		highlightBuilder.field(highlightTitle);
+
+
 		SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource();
 		searchSourceBuilder.query(boolQueryBuilder);
+
+		// sets
+		searchSourceBuilder.highlighter(highlightBuilder);
+
 		searchSourceBuilder.from(COUNT_PER_PAGE * (page - 1));
 		searchSourceBuilder.size(COUNT_PER_PAGE);
 		String[] includes = {"createdDate", "postId", "fileId", "title", "content", "writer", "noticeYn", "deleteYn", "savedFilename", "modifiedDate", "deletedDate"};
@@ -118,8 +131,30 @@ final class PostEsHelper {
 //		boolQueryBuilder.should().add(QueryBuilders.matchQuery("author_text", query).boost(10.0f));
 		boolQueryBuilder.should().add(QueryBuilders.matchQuery("writer_text", query).boost(10.0f));
 
+
+		// creating HighlightBuilder  added
+		HighlightBuilder highlightBuilder = new HighlightBuilder();
+		// create a filed javaapi.client.highlighter for the title field
+		HighlightBuilder.Field highlightTitle = new HighlightBuilder.Field("title_text");
+		// set field javaapi.client.highlighter type
+		highlightTitle.highlighterType("unified");
+		highlightBuilder.field(highlightTitle);
+
+		// creating HighlightBuilder  added
+		// create a filed javaapi.client.highlighter for the writer field
+		HighlightBuilder.Field highlightWriter = new HighlightBuilder.Field("writer_text");
+		// set field javaapi.client.highlighter type
+		highlightWriter.highlighterType("unified");
+		highlightBuilder.field(highlightWriter);
+
+
+
 		SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource();
 		searchSourceBuilder.query(boolQueryBuilder);
+
+		// sets
+		searchSourceBuilder.highlighter(highlightBuilder);
+
 		searchSourceBuilder.from(COUNT_PER_PAGE * (page - 1));
 		searchSourceBuilder.size(COUNT_PER_PAGE);
 		String[] includes = {"createdDate", "postId", "fileId", "title", "content", "writer", "noticeYn", "deleteYn", "savedFilename", "modifiedDate", "deletedDate"};
@@ -144,7 +179,7 @@ final class PostEsHelper {
 
 		// creating HighlightBuilder  added
 		HighlightBuilder highlightBuilder = new HighlightBuilder();
-		// create a filed javaapi.client.highlighter for the cotent field
+		// create a filed javaapi.client.highlighter for the title field
 		HighlightBuilder.Field highlightTitle = new HighlightBuilder.Field("title_text");
 		// set field javaapi.client.highlighter type
 		highlightTitle.highlighterType("unified");
@@ -189,8 +224,36 @@ final class PostEsHelper {
 		boolQueryBuilder.should().add(QueryBuilders.matchQuery("writer_text", query).boost(10.0f));
 		boolQueryBuilder.should().add(QueryBuilders.matchQuery("content_text", query));
 
+
+		// creating HighlightBuilder  added
+		HighlightBuilder highlightBuilder = new HighlightBuilder();
+		// create a filed javaapi.client.highlighter for the title field
+		HighlightBuilder.Field highlightTitle = new HighlightBuilder.Field("title_text");
+		// set field javaapi.client.highlighter type
+		highlightTitle.highlighterType("unified");
+		highlightBuilder.field(highlightTitle);
+
+		// creating HighlightBuilder  added
+		// create a filed javaapi.client.highlighter for the cotent field
+		HighlightBuilder.Field highlightContent = new HighlightBuilder.Field("content_text");
+		// set field javaapi.client.highlighter type
+		highlightContent.highlighterType("unified");
+		highlightBuilder.field(highlightContent);
+
+		// creating HighlightBuilder  added
+		// create a filed javaapi.client.highlighter for the writer field
+		HighlightBuilder.Field highlightWriter = new HighlightBuilder.Field("writer_text");
+		// set field javaapi.client.highlighter type
+		highlightWriter.highlighterType("unified");
+		highlightBuilder.field(highlightWriter);
+
+
 		SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource();
 		searchSourceBuilder.query(boolQueryBuilder);
+
+		// sets
+		searchSourceBuilder.highlighter(highlightBuilder);
+
 		searchSourceBuilder.from(COUNT_PER_PAGE * (page - 1));
 		searchSourceBuilder.size(COUNT_PER_PAGE);
 
@@ -273,8 +336,22 @@ final class PostEsHelper {
 //		boolQueryBuilder.should().add(QueryBuilders.matchQuery("title_engtohan", query));
 				.add(QueryBuilders.matchQuery("title_entoko", query.replaceAll("\\s+", "")).boost(10.0f));
 		boolQueryBuilder.should().add(QueryBuilders.matchQuery("title_entoko", query));
+
+		// creating HighlightBuilder  added
+		HighlightBuilder highlightBuilder = new HighlightBuilder();
+		// create a filed javaapi.client.highlighter for the title field
+		HighlightBuilder.Field highlightTitle = new HighlightBuilder.Field("title_entoko");
+		// set field javaapi.client.highlighter type
+		highlightTitle.highlighterType("unified");
+		highlightBuilder.field(highlightTitle);
+
+
 		SearchSourceBuilder searchSourceBuilder = SearchSourceBuilder.searchSource();
 		searchSourceBuilder.query(boolQueryBuilder);
+
+		// sets
+		searchSourceBuilder.highlighter(highlightBuilder);
+
 		searchSourceBuilder.from(COUNT_PER_PAGE * (page - 1));
 		searchSourceBuilder.size(AUTO_COMPLETE_LIMIT);
 		searchSourceBuilder.fetchSource(includes, null);
